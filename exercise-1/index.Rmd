@@ -3,7 +3,7 @@ output: html_document
 ---
 
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=TRUE}
 ### Exercise 1 ###
 
 library(jsonlite)
@@ -19,33 +19,42 @@ GetReview <- function(movie) {
   # Your parameters should include a "query" and an "api_key"
    ## Note: the HTTR library will take care of spaces in the arguments
    ## Use YOUR api key.  
+  
+   base.url <- "https://api.nytimes.com/svc/movies/v2/reviews/search.json?"
+   api.key <- "a185e951c2e44bc09d35b36c918687d2"
+   query.params <- list(query = movie, api_key = api.key)
+  
 
    ## Try the interactive console:
    ## https://developer.nytimes.com/movie_reviews_v2.json#/Console/GET/reviews/search.json
    ## it will display the result in json format
    ## you can figure out how to extract the corresponding R list components
-  
+ 
    ## Request data using your search query
-  
+   response <- GET(base.url, query = query.params)
+   body <- content(response, "text")
+   results <- fromJSON(body)
   
    ## Flatten the data stored in the `$results` key of the data returned to you
-  
+   results2 <- flatten(results$results)
    ## From the most recent review, store the headline, short summary, and link to full article
    ## each in their own variables
-
+   headline <- results2$headline
+   short.summary <- results2$summary_short
+   link.article <- results2$link.url
    ## Return an list of the three pieces of information from above:
    ## return(list(summary, headline, link))
-  
+  return(list(short.summary, headline, link.article))
 }
 
 ## get your API key.
 ## Mine is stored in the file "nyt_movie_reviews_api"
 ## you should not insert this in the code and upload to github.
-api.key <- readLines("~/Documents/keys/nyt_movie_reviews_api")
+
 
 ### Store the name of the movie in a variable
-
+movie <- "Almost Famous"
 ### Create a variable called `movie.info` by passing the movie name variable to your GetReview function
-
+movie.info <- GetReview(movie)
 
 ```
